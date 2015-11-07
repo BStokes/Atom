@@ -1,0 +1,2 @@
+'.platform-win32, .platform-linux':
+  'ctrl-alt-shift-B': 'remote-edit:browse'

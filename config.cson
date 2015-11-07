@@ -1,0 +1,64 @@
+"*":
+  "exception-reporting":
+    userId: "a37969f1-9887-9127-32b8-42ff91863e02"
+  welcome:
+    showOnStartup: false
+  linter: {}
+  editor:
+    invisibles: {}
+    preferredLineLength: 100
+    lineHeight: 1.4
+    showIndentGuide: true
+    tabLength: 4
+    fontFamily: "Source Code Pro"
+  core:
+    projectHome: "/home/bill/Projects"
+    themes: [
+      "dark-flat-ui"
+      "outlander-syntax"
+    ]
+    disabledPackages: [
+      "indent-guide-improved"
+    ]
+  "atom-beautify":
+    _analyticsUserId: "3f456593-a9f0-4c00-a0ec-55e1217bb910"
+    html_end_with_newline: true
+    analytics: false
+    beautifyEntireFileOnSave: false
+    js_end_with_newline: true
+    css_align_assignments: true
+    html_indent_inner_html: true
+    js_break_chained_methods: true
+    html_wrap_attributes: "force"
+    html_wrap_line_length: 120
+  fonts:
+    fontFamily: "Source Code Pro Light"
+  "one-dark-ui":
+    layoutMode: "Spacious"
+  "one-light-ui": {}
+  "file-icons":
+    forceShow: true
+  "css-comb": {}
+  "autocomplete-plus": {}
+  tabs:
+    enableVcsColoring: true
+  "git-diff":
+    showIconsInEditorGutter: true
+  global:
+    editor:
+      softWrap: false
+      tabLength: 4
+    source:
+      html:
+        editor:
+          tabLength: 4
+      js:
+        editor:
+          tabLength: 4
+  minimap: {}
+  emmet: {}
+  "imdone-atom": {}
+  "jscs-fixer": {}
+".text.todo":
+  editor:
+    preferredLineLength: 100

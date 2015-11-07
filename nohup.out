@@ -1,0 +1,17 @@
+[6980:0705/235945:ERROR:browser_main_loop.cc(170)] Running without the SUID sandbox! See https://code.google.com/p/chromium/wiki/LinuxSUIDSandboxDevelopment for more information on developing with the sandbox on.
+App load time: 210ms
+[7002:0705/235945:ERROR:sandbox_linux.cc(325)] InitializeSandbox() called with multiple threads in process gpu-process
+[7012:0705/235945:INFO:renderer_main.cc(212)] Renderer process started
+[6980:0705/235946:INFO:CONSOLE(56)] "Window load time: 842ms", source: file:///usr/share/atom/resources/app.asar/static/index.js (56)
+[6980:0706/000159:INFO:CONSOLE(26)] "Error: cannot find Atom package linter", source: /home/bill/.atom/packages/atom-typescript/node_modules/atom-package-dependencies/index.js (26)
+[6980:0706/000200:INFO:CONSOLE(49)] "linter not installed. Attempting installation now.", source: /home/bill/.atom/packages/atom-typescript/node_modules/atom-package-dependencies/index.js (49)
+[6980:0706/000204:INFO:CONSOLE(66)] "linter installed successfully.", source: /home/bill/.atom/packages/atom-typescript/node_modules/atom-package-dependencies/index.js (66)
+[6980:0706/000204:INFO:CONSOLE(26)] "Error: cannot find Atom package linter", source: /home/bill/.atom/packages/atom-typescript/node_modules/atom-package-dependencies/index.js (26)
+Created new window in existing browser session.
+Created new window in existing browser session.
+Created new window in existing browser session.
+Created new window in existing browser session.
+Created new window in existing browser session.
+Created new window in existing browser session.
+Created new window in existing browser session.
+Created new window in existing browser session.

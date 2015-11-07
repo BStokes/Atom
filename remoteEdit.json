@@ -1,0 +1,1 @@
+{"hostList":"[{\"alias\":\"\",\"hostname\":\"52.24.172.64\\n\",\"directory\":\"/\",\"username\":\"ubuntu\",\"port\":\"22\",\"localFiles\":\"[]\",\"useAgent\":false,\"usePrivateKey\":true,\"usePassword\":false,\"passphrase\":\"\",\"privateKeyPath\":\"/home/bill/.ssh/eb_test.pem\",\"deserializer\":\"SftpHost\"}]","deserializer":"InterProcessData"}

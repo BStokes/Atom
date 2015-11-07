@@ -1,0 +1,44 @@
+
+@import "syntax-variables";
+
+
+// Fix cursor disappearing on unity
+atom-text-editor:not(.mini)::shadow,
+atom-text-editor:not(.mini)::shadow .blink-off,
+atom-text-editor.vim-mode.command-mode,
+atom-text-editor.vim-mode.operator-pending-mode,
+atom-text-editor.vim-mode.visual-mode,
+atom-text-editor.is-focused,
+atom-text-editor:not(.is-focused) {
+  .cursor, .cursor.blink-off {
+    visibility: visible !important;
+    opacity: 1 !important;
+    border-left-width: 2px;
+    color: #90c0ff;
+  }
+}
+
+
+// Make a squatty treeviews
+.tree-view {
+  font-size: 13px;
+  .list-item {
+    line-height: 21px !important;
+  }
+  .selected:before, .selected:before {
+    height: 18px !important;
+  }
+  .icon:before {
+    font-size: 13px;
+    width: 10px;
+    height: 10px;
+    // opacity: .6;
+    position: relative;
+    top: 0px;
+  }
+  .header:before {
+    font-size: 10px !important;
+    opacity: .6;
+    margin-right: 0px !important;
+  }
+}
