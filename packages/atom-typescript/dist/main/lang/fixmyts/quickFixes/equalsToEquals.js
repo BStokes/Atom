@@ -1,3 +1,4 @@
+"use strict";
 var EqualsToEquals = (function () {
     function EqualsToEquals() {
         this.key = EqualsToEquals.name;
@@ -28,5 +29,5 @@ var EqualsToEquals = (function () {
         return [refactoring];
     };
     return EqualsToEquals;
-})();
+}());
 exports.EqualsToEquals = EqualsToEquals;

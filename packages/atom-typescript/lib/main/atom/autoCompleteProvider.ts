@@ -92,12 +92,12 @@ export var provider: autocompleteplus.Provider = {
         if (!fs.existsSync(filePath)) return Promise.resolve([]);
 
         // If we are looking at reference or require path support file system completions
-        var pathMatchers = ['reference.path.string', 'require.path.string', 'es6import.path.string'];
+        var pathMatchers = ['reference.path.string.quoted', 'require.path.string.quoted', 'es6import.path.string.quoted'];
         var lastScope = options.scopeDescriptor.scopes[options.scopeDescriptor.scopes.length - 1];
 
         // For file path completions
         if (pathMatchers.some(p=> lastScope === p)) {
-            return parent.getRelativePathsInProject({ filePath, prefix: options.prefix, includeExternalModules: lastScope !== 'reference.path.string' })
+            return parent.getRelativePathsInProject({ filePath, prefix: options.prefix, includeExternalModules: lastScope !== 'reference.path.string.quoted' })
                 .then((resp) => {
                 return resp.files.map(file => {
                     var relativePath = file.relativePath;
@@ -112,19 +112,19 @@ export var provider: autocompleteplus.Provider = {
                         type: 'path'
                     };
 
-                    if (lastScope == 'reference.path.string') {
+                    if (lastScope == 'reference.path.string.quoted') {
                         suggestion.atomTS_IsReference = {
                             relativePath: relativePath
                         };
                     }
 
-                    if (lastScope == 'require.path.string') {
+                    if (lastScope == 'require.path.string.quoted') {
                         suggestion.atomTS_IsImport = {
                             relativePath: relativePath
                         };
                     }
 
-                    if (lastScope == 'es6import.path.string') {
+                    if (lastScope == 'es6import.path.string.quoted') {
                         suggestion.atomTS_IsES6Import = {
                             relativePath: relativePath
                         };
@@ -214,13 +214,14 @@ export var provider: autocompleteplus.Provider = {
             if (options.suggestion.atomTS_IsImport) {
                 options.editor.moveToBeginningOfLine();
                 options.editor.selectToEndOfLine();
-                var groups = /^\s*import\s*(\w*)\s*=\s*require\s*\(\s*(["'])/.exec(options.editor.getSelectedText());
-                var alias = groups[1];
+                var groups = /^(\s*)import\s*(\w*)\s*=\s*require\s*\(\s*(["'])/.exec(options.editor.getSelectedText());
+                var leadingWhiteSpace = groups[1];
+                var alias = groups[2];
 
                 // Use the option if they have a preferred. Otherwise preserve
-                quote = quote || groups[2];
+                quote = quote || groups[3];
 
-                options.editor.replaceSelectedText(null, function() { return `import ${alias} = require(${quote}${options.suggestion.atomTS_IsImport.relativePath}${quote});`; });
+                options.editor.replaceSelectedText(null, function() { return `${leadingWhiteSpace}import ${alias} = require(${quote}${options.suggestion.atomTS_IsImport.relativePath}${quote});`; });
             }
             if (options.suggestion.atomTS_IsES6Import) {
                 var {row} = options.editor.getCursorBufferPosition();

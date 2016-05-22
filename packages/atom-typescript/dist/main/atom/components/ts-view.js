@@ -1,15 +1,17 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var escapeHtml = require("escape-html");
 var TsView = (function (_super) {
     __extends(TsView, _super);
     function TsView() {
         _super.apply(this, arguments);
     }
     TsView.prototype.createdCallback = function () {
-        var preview = this.innerText;
+        var preview = escapeHtml(this.innerText);
         this.innerText = "";
         var editorElement = this.editorElement = document.createElement('atom-text-editor');
         editorElement.setAttributeNode(document.createAttribute('gutter-hidden'));
@@ -23,9 +25,9 @@ var TsView = (function (_super) {
         this.appendChild(editorElement);
     };
     TsView.prototype.text = function (text) {
-        this.editor.setText(text);
+        this.editor.setText(escapeHtml(text));
     };
     return TsView;
-})(HTMLElement);
+}(HTMLElement));
 exports.TsView = TsView;
 document.registerElement('ts-view', TsView);

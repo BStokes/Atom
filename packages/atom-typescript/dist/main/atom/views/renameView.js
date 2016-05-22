@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -72,7 +73,7 @@ var RenameView = (function (_super) {
     };
     RenameView.content = html;
     return RenameView;
-})(view.View);
+}(view.View));
 exports.RenameView = RenameView;
 var panel;
 function attach() {

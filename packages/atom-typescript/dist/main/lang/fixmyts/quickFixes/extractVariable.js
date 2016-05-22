@@ -1,3 +1,4 @@
+"use strict";
 var os_1 = require("os");
 var ExtractVariable = (function () {
     function ExtractVariable() {
@@ -13,7 +14,6 @@ var ExtractVariable = (function () {
         }, function () {
             return { display: "Extract variable" };
         });
-        throw "Unexpected state in canProvideFix";
     };
     ExtractVariable.prototype.provideFix = function (info) {
         return execute(info, function () {
@@ -23,10 +23,9 @@ var ExtractVariable = (function () {
         }, function (callExpression) {
             return extractVariableFromArg(info, callExpression);
         });
-        throw "Unexpected state in provideFix";
     };
     return ExtractVariable;
-})();
+}());
 exports.ExtractVariable = ExtractVariable;
 function execute(info, onProperty, onFuncCall, onExtractable) {
     var callExpression = findLowestNode(info.positionNode, ts.SyntaxKind.CallExpression);

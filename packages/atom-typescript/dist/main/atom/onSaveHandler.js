@@ -1,3 +1,4 @@
+"use strict";
 var atomUtils = require("./atomUtils");
 var parent = require('../../worker/parent');
 var mainPanelView_1 = require("./views/mainPanelView");
@@ -12,7 +13,7 @@ function handle(event) {
     mainPanelView_1.show();
     parent.getProjectFileDetails({ filePath: event.filePath }).then(function (fileDetails) {
         if (fileDetails.project.compileOnSave
-            && !fileDetails.project.compilerOptions.out
+            && !fileDetails.project.compilerOptions.outFile
             && !fileDetails.project.buildOnSave) {
             textUpdated.then(function () { return parent.emitFile({ filePath: event.filePath }); })
                 .then(function (res) {
@@ -25,6 +26,9 @@ function handle(event) {
         }
         if (fileDetails.project.buildOnSave) {
             atom.commands.dispatch(atom.views.getView(event.editor), 'typescript:build');
+        }
+        if (fileDetails.project.atom.formatOnSave) {
+            atom.commands.dispatch(atom.views.getView(event.editor), 'typescript:format-code');
         }
     });
 }

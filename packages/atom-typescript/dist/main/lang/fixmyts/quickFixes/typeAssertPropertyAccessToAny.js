@@ -1,3 +1,4 @@
+"use strict";
 var TypeAssertPropertyAccessToAny = (function () {
     function TypeAssertPropertyAccessToAny() {
         this.key = TypeAssertPropertyAccessToAny.name;
@@ -34,7 +35,7 @@ var TypeAssertPropertyAccessToAny = (function () {
         return [];
     };
     return TypeAssertPropertyAccessToAny;
-})();
+}());
 exports.TypeAssertPropertyAccessToAny = TypeAssertPropertyAccessToAny;
 function getIdentifierName(errorText) {
     var match = /Property \'(\w+)\' does not exist on type \.*/.exec(errorText);

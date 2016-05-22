@@ -1,3 +1,4 @@
+"use strict";
 var fsu = require("../utils/fsUtil");
 var fs = require('fs');
 var path = require('path');
@@ -47,7 +48,7 @@ function build(query) {
     projectCache_1.consistentPath(query);
     var proj = projectCache_1.getOrCreateProject(query.filePath);
     var filesToEmit = proj.projectFile.project.files.filter(function (fte) { return !fte.toLowerCase().endsWith('.json'); });
-    filesToEmit = proj.projectFile.project.compilerOptions.out ? [filesToEmit[0]] : filesToEmit;
+    filesToEmit = proj.projectFile.project.compilerOptions.outFile ? [filesToEmit[0]] : filesToEmit;
     var totalCount = filesToEmit.length;
     var builtCount = 0;
     var errorCount = 0;
@@ -262,7 +263,7 @@ function errorsForFile(query) {
         return resolve({ errors: errors });
     }
     else {
-        var result;
+        var result = void 0;
         if (project.includesSourceFile(query.filePath)) {
             result = getDiagnositcsByFilePath(query).map(building.diagnosticToTSError);
         }
@@ -334,8 +335,8 @@ function getProjectFileDetails(query) {
 exports.getProjectFileDetails = getProjectFileDetails;
 function sortNavbarItemsBySpan(items) {
     items.sort(function (a, b) { return a.spans[0].start - b.spans[0].start; });
-    for (var _i = 0; _i < items.length; _i++) {
-        var item = items[_i];
+    for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
+        var item = items_1[_i];
         if (item.childItems) {
             sortNavbarItemsBySpan(item.childItems);
         }

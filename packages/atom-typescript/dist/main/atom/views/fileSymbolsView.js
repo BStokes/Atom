@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -49,5 +50,5 @@ var FileSymbolsView = (function (_super) {
         this.hide();
     };
     return FileSymbolsView;
-})(sp.SelectListView);
+}(sp.SelectListView));
 exports.FileSymbolsView = FileSymbolsView;

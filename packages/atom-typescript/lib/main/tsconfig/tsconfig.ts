@@ -16,7 +16,11 @@ var types = simpleValidator.types;
  * 	3 If its a path : Update the `make relative` code
  */
 interface CompilerOptions {
+    allowJs?: boolean;
     allowNonTsExtensions?: boolean;
+    allowSyntheticDefaultImports?: boolean;
+    allowUnreachableCode?: boolean;
+    allowUnusedLabels?: boolean;
     charset?: string;
     codepage?: number;
     declaration?: boolean;
@@ -25,6 +29,7 @@ interface CompilerOptions {
     experimentalAsyncFunctions?: boolean;
     experimentalDecorators?: boolean;                 // Experimental. Needed for the next option `emitDecoratorMetadata` see : https://github.com/Microsoft/TypeScript/pull/3330
     emitDecoratorMetadata?: boolean;                  // Experimental. Emits addition type information for this reflection API https://github.com/rbuckton/ReflectDecorators
+    forceConsistentCasingInFileNames?: boolean;
     help?: boolean;
     isolatedModules?: boolean;
     inlineSourceMap?: boolean;
@@ -40,29 +45,40 @@ interface CompilerOptions {
     noEmitHelpers?: boolean;
     noEmitOnError?: boolean;
     noErrorTruncation?: boolean;
+    noFallthroughCasesInSwitch?: boolean;
     noImplicitAny?: boolean;                          // Error on inferred `any` type
+    noImplicitReturns?: boolean;
+    noImplicitUseStrict?: boolean;
     noLib?: boolean;
     noLibCheck?: boolean;
     noResolve?: boolean;
-    out?: string;
+    out?: string;                                     // Deprecated. Use outFile instead
     outFile?: string;                                 // new name for out
     outDir?: string;                                  // Redirect output structure to this directory
     preserveConstEnums?: boolean;
+    pretty?: boolean;                                 // Experimental
+    project?: string;
+    reactNamespace?: string;
     removeComments?: boolean;                         // Do not emit comments in output
     rootDir?: string;
+    skipDefaultLibCheck?: boolean;
     sourceMap?: boolean;                              // Generates SourceMaps (.map files)
     sourceRoot?: string;                              // Optionally specifies the location where debugger should locate TypeScript source files after deployment
     stripInternal?: boolean;
     suppressExcessPropertyErrors?: boolean;           // Optionally disable strict object literal assignment checking
     suppressImplicitAnyIndexErrors?: boolean;
-    target?: string;                                  // 'es3'|'es5' (default)|'es6'
+    target?: string;                                  // 'es3'|'es5' (default)|'es6'|'es2015'
     version?: boolean;
     watch?: boolean;
 }
 
 var compilerOptionsValidation: simpleValidator.ValidationInfo = {
-    allowNonTsExtensions: { type: simpleValidator.types.boolean },
-    charset: { type: simpleValidator.types.string },
+    allowJs: { type: types.boolean },
+    allowNonTsExtensions: { type: types.boolean },
+    allowSyntheticDefaultImports: { type: types.boolean },
+    allowUnreachableCode: { type: types.boolean },
+    allowUnusedLabels: { type: types.boolean },
+    charset: { type: types.string },
     codepage: { type: types.number },
     declaration: { type: types.boolean },
     diagnostics: { type: types.boolean },
@@ -70,6 +86,7 @@ var compilerOptionsValidation: simpleValidator.ValidationInfo = {
     experimentalAsyncFunctions: { type: types.boolean },
     experimentalDecorators: { type: types.boolean },
     emitDecoratorMetadata: { type: types.boolean },
+    forceConsistentCasingInFileNames: { type: types.boolean },
     help: { type: types.boolean },
     inlineSourceMap: { type: types.boolean },
     inlineSources: { type: types.boolean },
@@ -85,7 +102,10 @@ var compilerOptionsValidation: simpleValidator.ValidationInfo = {
     noEmitHelpers: { type: types.boolean },
     noEmitOnError: { type: types.boolean },
     noErrorTruncation: { type: types.boolean },
+    noFallthroughCasesInSwitch: { type: types.boolean },
     noImplicitAny: { type: types.boolean },
+    noImplicitUseStrict: { type: types.boolean },
+    noImplicitReturns: { type: types.boolean },
     noLib: { type: types.boolean },
     noLibCheck: { type: types.boolean },
     noResolve: { type: types.boolean },
@@ -93,14 +113,19 @@ var compilerOptionsValidation: simpleValidator.ValidationInfo = {
     outFile: { type: types.string },
     outDir: { type: types.string },
     preserveConstEnums: { type: types.boolean },
+    pretty: { type: types.boolean },
+    project: { type: types.string },
+    reactNamespace: { type: types.string },
     removeComments: { type: types.boolean },
     rootDir: { type: types.string },
+    skipDefaultLibCheck: { type: types.boolean },
     sourceMap: { type: types.boolean },
     sourceRoot: { type: types.string },
+    strictNullChecks: { type: types.boolean },
     stripInternal: { type: types.boolean },
     suppressExcessPropertyErrors: { type: types.boolean },
     suppressImplicitAnyIndexErrors: { type: types.boolean },
-    target: { type: types.string, validValues: ['es3', 'es5', 'es6'] },
+    target: { type: types.string, validValues: ['es3', 'es5', 'es6', 'es2015'] },
     version: { type: types.boolean },
     watch: { type: types.boolean },
 }
@@ -129,6 +154,7 @@ interface TypeScriptProjectRawSpecification {
     buildOnSave?: boolean;
     externalTranspiler?: string | { name: string; options?: any };
     scripts?: { postbuild?: string };
+    atom?: { rewriteTsconfig?: boolean, formatOnSave?: boolean };
 }
 
 /**
@@ -146,6 +172,7 @@ export interface TypeScriptProjectSpecification {
     package?: UsefulFromPackageJson;
     externalTranspiler?: string | { name: string; options?: any };
     scripts: { postbuild?: string };
+    atom: { rewriteTsconfig: boolean, formatOnSave: boolean };
 }
 
 ///////// FOR USE WITH THE API /////////////
@@ -200,6 +227,7 @@ import path = require('path');
 import tsconfig = require('tsconfig');
 import os = require('os');
 import detectIndent = require('detect-indent');
+import detectNewline = require('detect-newline');
 import extend = require('xtend');
 import formatting = require('./formatting');
 
@@ -214,7 +242,7 @@ var defaultFilesGlob = [
     "!node_modules/**",
 ];
 /**
- * This is what we use when the user doens't specify a files / filesGlob
+ * This is what we use when the user doesn't specify a files / filesGlob
  */
 var invisibleFilesGlob = '{**/*.ts,**/*.tsx}';
 
@@ -228,6 +256,7 @@ export var defaults: ts.CompilerOptions = {
     emitDecoratorMetadata: true,
     declaration: false,
     noImplicitAny: false,
+    noImplicitUseStrict: false,
     removeComments: true,
     noLib: false,
     preserveConstEnums: true,
@@ -278,10 +307,12 @@ function mixin(target: any, source: any): any {
 
 function rawToTsCompilerOptions(jsonOptions: CompilerOptions, projectDir: string): ts.CompilerOptions {
     // Cannot use Object.create because the compiler checks hasOwnProperty
-    var compilerOptions = <ts.CompilerOptions> mixin({}, defaults);
+    var compilerOptions = <ts.CompilerOptions>mixin({}, defaults);
     for (var key in jsonOptions) {
         if (typescriptEnumMap[key]) {
-            compilerOptions[key] = typescriptEnumMap[key][jsonOptions[key].toLowerCase()];
+            let name = jsonOptions[key];
+            let map = typescriptEnumMap[key];
+            compilerOptions[key] = map[name.toLowerCase()] || map[name.toUpperCase()];
         }
         else {
             compilerOptions[key] = jsonOptions[key];
@@ -297,12 +328,12 @@ function rawToTsCompilerOptions(jsonOptions: CompilerOptions, projectDir: string
     }
 
     if (compilerOptions.out !== undefined) {
-        compilerOptions.out = path.resolve(projectDir, compilerOptions.out);
+        // Till out is removed. Support by just copying it to `outFile`
+        compilerOptions.outFile = path.resolve(projectDir, compilerOptions.out);
     }
 
     if (compilerOptions.outFile !== undefined) {
-        // Till out is removed. Support outFile by just copying it to `out`
-        compilerOptions.out = path.resolve(projectDir, compilerOptions.outFile);
+        compilerOptions.outFile = path.resolve(projectDir, compilerOptions.outFile);
     }
 
     return compilerOptions;
@@ -310,7 +341,7 @@ function rawToTsCompilerOptions(jsonOptions: CompilerOptions, projectDir: string
 
 function tsToRawCompilerOptions(compilerOptions: ts.CompilerOptions): CompilerOptions {
     // Cannot use Object.create because JSON.stringify will only serialize own properties
-    var jsonOptions = <CompilerOptions> mixin({}, compilerOptions);
+    var jsonOptions = <CompilerOptions>mixin({}, compilerOptions);
 
     Object.keys(compilerOptions).forEach((key) => {
         if (jsonEnumMap[key] && compilerOptions[key]) {
@@ -337,7 +368,8 @@ export function getDefaultInMemoryProject(srcFile: string): TypeScriptProjectFil
         formatCodeOptions: formatting.defaultFormatCodeOptions(),
         compileOnSave: true,
         buildOnSave: false,
-        scripts: {}
+        scripts: {},
+        atom: { rewriteTsconfig: true, formatOnSave: false },
     };
 
     return {
@@ -362,8 +394,8 @@ export function getProjectSync(pathOrSrcFile: string): TypeScriptProjectFileDeta
     var projectFile = tsconfig.resolveSync(dir);
 
     if (!projectFile) {
-      throw errorWithDetails<GET_PROJECT_NO_PROJECT_FOUND_Details>(
-          new Error(errors.GET_PROJECT_NO_PROJECT_FOUND), { projectFilePath: fsu.consistentPath(pathOrSrcFile), errorMessage: 'not found' });
+        throw errorWithDetails<GET_PROJECT_NO_PROJECT_FOUND_Details>(
+            new Error(errors.GET_PROJECT_NO_PROJECT_FOUND), { projectFilePath: fsu.consistentPath(pathOrSrcFile), errorMessage: 'not found' });
     }
 
     var projectFileDirectory = path.dirname(projectFile) + path.sep;
@@ -385,10 +417,17 @@ export function getProjectSync(pathOrSrcFile: string): TypeScriptProjectFileDeta
             new Error(errors.GET_PROJECT_JSON_PARSE_FAILED), { projectFilePath: fsu.consistentPath(projectFile), error: ex.message });
     }
 
-    if (projectSpec.filesGlob) { // for filesGlob we keep the files in sync
-        var prettyJSONProjectSpec = prettyJSON(projectSpec, detectIndent(projectFileTextContent).indent);
+    /** Setup defaults for atom key */
+    if (!projectSpec.atom) {
+        projectSpec.atom = {
+            rewriteTsconfig: true,
+        }
+    }
 
-        if (prettyJSONProjectSpec !== projectFileTextContent) {
+    if (projectSpec.filesGlob) { // for filesGlob we keep the files in sync
+        var prettyJSONProjectSpec = prettyJSON(projectSpec, detectIndent(projectFileTextContent).indent, detectNewline(projectFileTextContent));
+
+        if (prettyJSONProjectSpec !== projectFileTextContent && projectSpec.atom.rewriteTsconfig) {
             fs.writeFileSync(projectFile, prettyJSONProjectSpec);
         }
     }
@@ -421,7 +460,8 @@ export function getProjectSync(pathOrSrcFile: string): TypeScriptProjectFileDeta
         typings: [],
         externalTranspiler: projectSpec.externalTranspiler == undefined ? undefined : projectSpec.externalTranspiler,
         scripts: projectSpec.scripts || {},
-        buildOnSave: !!projectSpec.buildOnSave
+        buildOnSave: !!projectSpec.buildOnSave,
+        atom: { rewriteTsconfig: true, formatOnSave: !!projectSpec.atom.formatOnSave }
     };
 
     // Validate the raw compiler options before converting them to TS compiler options
@@ -475,7 +515,12 @@ export function createProjectRootSync(srcFile: string, defaultOptions?: ts.Compi
     // We need to write the raw spec
     var projectSpec: TypeScriptProjectRawSpecification = {};
     projectSpec.compilerOptions = tsToRawCompilerOptions(defaultOptions || defaults);
-    projectSpec.filesGlob = defaultFilesGlob;
+    projectSpec.exclude = ["node_modules", "typings/browser", "typings/browser.d.ts"];
+    projectSpec.compileOnSave = true;
+    projectSpec.buildOnSave = false;
+    projectSpec.atom = {
+        rewriteTsconfig: false
+    };
 
     fs.writeFileSync(projectFilePath, prettyJSON(projectSpec));
     return getProjectSync(srcFile);
@@ -498,7 +543,7 @@ function increaseProjectForReferenceAndImports(files: string[]): string[] {
         }
     }
 
-    var getReferencedOrImportedFiles = (files: string[]): string[]=> {
+    var getReferencedOrImportedFiles = (files: string[]): string[] => {
         var referenced: string[][] = [];
 
         files.forEach(file => {
@@ -512,32 +557,36 @@ function increaseProjectForReferenceAndImports(files: string[]): string[] {
             var preProcessedFileInfo = ts.preProcessFile(content, true),
                 dir = path.dirname(file);
 
+            let extensions = ['.ts', '.d.ts', '.tsx'];
+            function getIfExists(filePathNoExt: string) {
+                for (let ext of extensions) {
+                    if (fs.existsSync(filePathNoExt + ext)) {
+                        return filePathNoExt + ext;
+                    }
+                }
+            }
+
             referenced.push(
                 preProcessedFileInfo.referencedFiles.map(fileReference => {
                     // We assume reference paths are always relative
                     var file = path.resolve(dir, fsu.consistentPath(fileReference.fileName));
-                    // Try all three, by itself, .ts, .d.ts
+                    // Try by itself then with extensions
                     if (fs.existsSync(file)) {
                         return file;
                     }
-                    if (fs.existsSync(file + '.ts')) {
-                        return file + '.ts';
-                    }
-                    if (fs.existsSync(file + '.d.ts')) {
-                        return file + '.d.ts';
-                    }
-                    return null;
-                }).filter(file=> !!file)
+                    return getIfExists(file);
+                }).filter(file => !!file)
                     .concat(
                     preProcessedFileInfo.importedFiles
                         .filter((fileReference) => pathIsRelative(fileReference.fileName))
                         .map(fileReference => {
-                            var file = path.resolve(dir, fileReference.fileName + '.ts');
-                            if (!fs.existsSync(file)) {
-                                file = path.resolve(dir, fileReference.fileName + '.d.ts');
+                            let fileNoExt = path.resolve(dir, fileReference.fileName);
+                            let file = getIfExists(fileNoExt);
+                            if (!file) {
+                                file = getIfExists(`${file}/index`);
                             }
                             return file;
-                        })
+                        }).filter(file => !!file)
                     )
             );
         });
@@ -583,9 +632,9 @@ function getDefinitionsForNodeModules(projectDir: string, files: string[]): { ou
     // Find our `typings` (anything in a typings folder with extension `.d.ts` is considered a typing)
     // These are INF powerful
     var ourTypings = files
-        .filter(f=> path.basename(path.dirname(f)) == 'typings' && endsWith(f, '.d.ts')
+        .filter(f => path.basename(path.dirname(f)) == 'typings' && endsWith(f, '.d.ts')
             || path.basename(path.dirname(path.dirname(f))) == 'typings' && endsWith(f, '.d.ts'));
-    ourTypings.forEach(f=> typings[path.basename(f)] = { filePath: f, version: Infinity });
+    ourTypings.forEach(f => typings[path.basename(f)] = { filePath: f, version: Infinity });
     var existing = createMap(files.map(fsu.consistentPath));
 
     function addAllReferencedFilesWithMaxVersion(file: string) {
@@ -608,7 +657,7 @@ function getDefinitionsForNodeModules(projectDir: string, files: string[]): { ou
             if (fs.existsSync(file + '.d.ts')) {
                 return file + '.d.ts';
             }
-        }).filter(f=> !!f);
+        }).filter(f => !!f);
 
         // Only ones we don't have by name yet
         // TODO: replace INF with an actual version
@@ -617,7 +666,7 @@ function getDefinitionsForNodeModules(projectDir: string, files: string[]): { ou
         // Add these
         files.forEach(f => typings[path.basename(f)] = { filePath: f, version: Infinity });
         // Keep expanding
-        files.forEach(f=> addAllReferencedFilesWithMaxVersion(f));
+        files.forEach(f => addAllReferencedFilesWithMaxVersion(f));
     }
 
     // Keep going up till we find node_modules
@@ -664,16 +713,16 @@ function getDefinitionsForNodeModules(projectDir: string, files: string[]): { ou
 
     var all = Object.keys(typings)
         .map(typing => typings[typing].filePath)
-        .map(x=> fsu.consistentPath(x));
+        .map(x => fsu.consistentPath(x));
     var implicit = all
-        .filter(x=> !existing[x]);
+        .filter(x => !existing[x]);
     var ours = all
-        .filter(x=> existing[x]);
+        .filter(x => existing[x]);
 
     return { implicit, ours, packagejson };
 }
 
-export function prettyJSON(object: any, indent: string | number = 4): string {
+export function prettyJSON(object: any, indent: string | number = 4, newLine: string = os.EOL): string {
     var cache = [];
     var value = JSON.stringify(
         object,
@@ -691,7 +740,7 @@ export function prettyJSON(object: any, indent: string | number = 4): string {
         },
         indent
     );
-    value = value.split('\n').join(os.EOL) + os.EOL;
+    value = value.replace(/(?:\r\n|\r|\n)/g, newLine) + newLine;
     cache = null;
     return value;
 }

@@ -26,14 +26,14 @@ class ConfigView extends View
           @button click: 'cancelNewList', class:'inline-block-tight btn', 'Forget it'
           @button click: 'doNewList', class:'inline-block-tight btn btn-primary', 'Looks good'
       @div outlet: 'plugins', class:'imdone-plugins-container config-panel'
-      # #BACKLOG:0 Add config view here
+      # #BACKLOG:10 Add config view here
 
   initialize: ({@imdoneRepo, @path, @uri}) ->
     @emitter = new Emitter
     @handleEvents()
 
   handleEvents: ->
-    # #DONE:0 Make resizable when open [Edit fiddle - JSFiddle](http://jsfiddle.net/3jMQD/614/)
+    # #DONE:30 Make resizable when open [Edit fiddle - JSFiddle](http://jsfiddle.net/3jMQD/614/)
     startY = startHeight = null
     container = this
     @resizer.on 'mousedown', (e) =>
@@ -102,7 +102,10 @@ class ConfigView extends View
     pluginView = plugin.getView()
     pluginView.addClass "imdone-plugin #{plugin.constructor.pluginName}"
     pluginView.appendTo @plugins
-    plugin.on 'view.show', => @showPlugin plugin
+    # plugin.on 'view.show', => @showPlugin plugin
+
+  removePlugin: (plugin) ->
+    plugin.getView().remove()
 
   showPlugin: (plugin) ->
     @hide()

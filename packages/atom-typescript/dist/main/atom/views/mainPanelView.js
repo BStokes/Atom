@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -295,8 +296,8 @@ var MainPanelView = (function (_super) {
         var title = panelHeaders.references + " ( <span class=\"text-highlight\" style=\"font-weight: bold\">Found: " + references.length + "</span> )";
         this.referencesPanelBtn.html(title);
         gotoHistory.referencesOutput.members = [];
-        for (var _i = 0; _i < references.length; _i++) {
-            var ref = references[_i];
+        for (var _i = 0, references_1 = references; _i < references_1.length; _i++) {
+            var ref = references_1[_i];
             var view = new lineMessageView.LineMessageView({
                 goToLine: function (filePath, line, col) { return gotoHistory.gotoLine(filePath, line, col, gotoHistory.referencesOutput); },
                 message: '',
@@ -399,7 +400,7 @@ var MainPanelView = (function (_super) {
         }
     };
     return MainPanelView;
-})(view.View);
+}(view.View));
 exports.MainPanelView = MainPanelView;
 var panel;
 function attach() {

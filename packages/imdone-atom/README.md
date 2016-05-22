@@ -2,15 +2,20 @@
 ----
 ### You live in the code, your tasks should too!
 
-![Create filter and move](https://cloud.githubusercontent.com/assets/233505/9454838/d3784fb2-4a8a-11e5-8503-73bf7a2028f1.gif)
+![gifrecord_2015-11-12_085528](https://cloud.githubusercontent.com/assets/233505/11121461/9899fb14-891b-11e5-8aba-a4646f8b1428.gif)
 
 [![apm](https://img.shields.io/apm/dm/imdone-atom.svg)](https://atom.io/packages/imdone-atom)
 [![apm](https://img.shields.io/apm/v/imdone-atom.svg)]()
 
+**Link your TODO comments to github issues.  Try the [imdone-atom-github](https://atom.io/packages/imdone-atom-github) plugin!**
 
-Developers are creative people and the text editor is their canvas.  For decades they've used TODO style code comments to track issues that almost never end up in issue tracking software.  iMDone is a plugin for your favorite text editor that turns code comments into trackable issues.  It collects all TODO style comments in your project and organizes them in a drag and drop task-board that integrates with any web based issue tracking system.
+Developers are creative people and the text editor is their canvas.  For decades they've used TODO style code comments to track issues that almost never end up in issue tracking software.  imdone is a plugin for your favorite text editor that turns code comments into trackable issues.  It collects all TODO style comments in your project and organizes them in a drag and drop task-board that integrates with any web based issue tracking system.
 
-iMDone works best with todo.txt and markdown syntax.  See the [syntax guide at imdone-core](https://github.com/imdone/imdone-core#task-formats) for details.
+imdone works best with todo.txt and markdown syntax.  See the [syntax guide at imdone-core](https://github.com/imdone/imdone-core#task-formats) for details.
+
+Plugin architecture
+----
+Visit the wiki page [How To Write Plugins](https://github.com/imdone/imdone-atom/wiki/How-To-Write-Plugins) to find out more.
 
 Install
 ----
@@ -30,7 +35,7 @@ You can ignore files with the "Exclude Vcs Ignored Paths" setting
 lib
 ```
 - .imdone/config.json  
-iMDone will also ignore files and folders that match a regex in the `.imdone/config.json`, `exclude` array.  The array is seeded with some common excludes on first run.
+imdone will also ignore files and folders that match a regex in the `.imdone/config.json`, `exclude` array.  The array is seeded with some common excludes on first run.
 
 **IMPORTANT:** If your project is large (#files > 1000) consider adding an .imdoneignore file.
 
@@ -62,20 +67,20 @@ Roadmap
 ----
 - [ ] #BACKLOG:30 Add configuration editor view for .imdone/config.json +Roadmap
   - Use copy/modified version of [settings-view/settings-panel.coffee at master · atom/settings-view](https://github.com/atom/settings-view/blob/master/lib/settings-panel.coffee)
-- [ ] #DONE:10 Provide service for plugins
 
 Documentation
 ----
 - [ ] #BACKLOG:40 Add rename list gif +help
-- [ ] #BACKLOG:10 Add new list gif +help
-- [ ] #BACKLOG:20 Add hide/show list gif +help
+- [ ] #BACKLOG:20 Add new list gif +help
+- [ ] #TODO:0 Add hide/show list gif +help
 - [ ] #BACKLOG:50 Add move list gif +help
 
 Completed
 ----
-- [x] #DONE:40 Re-apply filter when board is refreshed
-- [x] #DONE:20 Consider respecting "Exclude VCS ignored paths" or .imdoneignore issue:6 issue:4 +enhancement
-- [x] #DONE:60 Add list rename +Roadmap
-- [x] #DONE:130 Add help for configuration
-- [x] #DONE:140 Add help for task syntax
-- [x] #DONE:160 Add help for todo.txt syntax
+- [x] #DONE:20 Provide service for plugins
+- [x] #DONE:60 Re-apply filter when board is refreshed
+- [x] #DONE:40 Consider respecting "Exclude VCS ignored paths" or .imdoneignore issue:6 issue:4 +enhancement
+- [x] #DONE:80 Add list rename +Roadmap
+- [x] #DONE:150 Add help for configuration
+- [x] #DONE:160 Add help for task syntax
+- [x] #DONE:180 Add help for todo.txt syntax

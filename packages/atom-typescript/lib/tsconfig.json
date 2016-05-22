@@ -17,6 +17,7 @@
     "filesGlob": [
         "./**/*.ts",
         "./**/*.tsx",
+        "../typings/main.d.ts",
         "!node_modules/**/*.ts",
         "!node_modules/**/*.tsx"
     ],
@@ -67,6 +68,7 @@
         "./main/lang/fixmyts/quickFix.ts",
         "./main/lang/fixmyts/quickFixes/addClassMember.ts",
         "./main/lang/fixmyts/quickFixes/addClassMethod.ts",
+        "./main/lang/fixmyts/quickFixes/addImportFromStatement.ts",
         "./main/lang/fixmyts/quickFixes/addImportStatement.ts",
         "./main/lang/fixmyts/quickFixes/equalsToEquals.ts",
         "./main/lang/fixmyts/quickFixes/extractVariable.ts",
@@ -105,19 +107,15 @@
         "./typings/codemirror.d.ts",
         "./typings/d3/d3.d.ts",
         "./typings/emissary/emissary.d.ts",
-        "./typings/glob/glob.d.ts",
         "./typings/htmltojsx/htmltojsx.d.ts",
         "./typings/jquery/jquery.d.ts",
         "./typings/minimatch/minimatch.d.ts",
         "./typings/mixto/mixto.d.ts",
         "./typings/mkdirp/mkdirp.d.ts",
         "./typings/mustache.d.ts",
-        "./typings/node/node.d.ts",
-        "./typings/pathwatcher/pathwatcher.d.ts",
         "./typings/q/Q.d.ts",
         "./typings/react/react-jsx.d.ts",
         "./typings/react/react.d.ts",
-        "./typings/source-map/source-map.d.ts",
         "./typings/space-pen/space-pen.d.ts",
         "./typings/status-bar/status-bar.d.ts",
         "./typings/text-buffer/text-buffer.d.ts",
@@ -128,7 +126,12 @@
         "./worker/parent.ts",
         "./worker/queryParent.ts",
         "./main/atom/views/rView.tsx",
-        "./main/atom/views/semanticView.tsx"
+        "./main/atom/views/semanticView.tsx",
+        "../typings/main.d.ts"
     ],
-    "exclude": []
+    "exclude": [],
+    "atom": {
+        "rewriteTsconfig": true,
+        "formatOnSave": false
+    }
 }

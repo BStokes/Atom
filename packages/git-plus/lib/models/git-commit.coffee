@@ -4,7 +4,6 @@ Path = require 'flavored-path'
 
 git = require '../git'
 notifier = require '../notifier'
-splitPane = require '../splitPane'
 GitPush = require './git-push'
 GitPull = require './git-pull'
 
@@ -31,12 +30,13 @@ prepFile = (status, filePath) ->
     status = status.replace(/\s*\(.*\)\n/g, "\n")
     status = status.trim().replace(/\n/g, "\n#{commentchar} ")
     getTemplate(cwd).then (template) ->
-      fs.writeFileSync filePath,
+      content =
         """#{template}
         #{commentchar} Please enter the commit message for your changes. Lines starting
         #{commentchar} with '#{commentchar}' will be ignored, and an empty message aborts the commit.
         #{commentchar}
         #{commentchar} #{status}"""
+      fs.writeFileSync filePath, content
 
 destroyCommitEditor = ->
   atom.workspace?.getPanes().some (pane) ->
@@ -49,24 +49,24 @@ destroyCommitEditor = ->
         return true
 
 commit = (directory, filePath) ->
-  args = ['commit', '--cleanup=strip', "--file=#{filePath}"]
-  git.cmd(args, cwd: directory)
+  git.cmd(['commit', "--cleanup=strip", "--file=#{filePath}"], cwd: directory)
   .then (data) ->
     notifier.addSuccess data
     destroyCommitEditor()
     git.refresh()
+  .catch (data) ->
+    notifier.addError data
 
 cleanup = (currentPane, filePath) ->
-  currentPane.activate() if currentPane.alive
+  currentPane.activate() if currentPane.isAlive()
   disposables.dispose()
-  try fs.unlinkSync filePath
+  fs.unlink filePath
 
 showFile = (filePath) ->
-  atom.workspace.open(filePath, searchAllPanes: true).then (textEditor) ->
-    if atom.config.get('git-plus.openInPane')
-      splitPane(atom.config.get('git-plus.splitPane'), textEditor)
-    else
-      textEditor
+  if atom.config.get('git-plus.openInPane')
+    splitDirection = atom.config.get('git-plus.splitPane')
+    atom.workspace.getActivePane()["split#{splitDirection}"]()
+  atom.workspace.open filePath
 
 module.exports = (repo, {stageChanges, andPush}={}) ->
   filePath = Path.join(repo.getPath(), 'COMMIT_EDITMSG')
@@ -77,16 +77,16 @@ module.exports = (repo, {stageChanges, andPush}={}) ->
     .then (textEditor) ->
       disposables.add textEditor.onDidSave ->
         commit(dir(repo), filePath)
-        .then -> (GitPull(repo).then -> GitPush(repo)) if andPush
+        .then -> GitPush(repo) if andPush
       disposables.add textEditor.onDidDestroy -> cleanup currentPane, filePath
     .catch (msg) -> notifier.addError msg
 
   if stageChanges
-    git.add(repo, update: stageChanges).then -> init().then -> startCommit()
+    git.add(repo, update: stageChanges).then(-> init()).then -> startCommit()
   else
     init().then -> startCommit()
     .catch (message) ->
-      if message.includes 'CRLF'
+      if message.includes?('CRLF')
         startCommit()
       else
         notifier.addInfo message

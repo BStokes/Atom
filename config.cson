@@ -3,34 +3,39 @@
     userId: "a37969f1-9887-9127-32b8-42ff91863e02"
   welcome:
     showOnStartup: false
-  linter: {}
+  linter:
+    errorPanelHeight: 111
   editor:
     invisibles: {}
     preferredLineLength: 100
     lineHeight: 1.4
     showIndentGuide: true
-    tabLength: 4
     fontFamily: "Source Code Pro"
+    softWrapAtPreferredLineLength: true
+    tabLength: 4
+    fontSize: 17
   core:
     projectHome: "/home/bill/Projects"
     themes: [
-      "dark-flat-ui"
-      "outlander-syntax"
+      "atom-dark-ui"
+      "atom-dark-syntax"
     ]
     disabledPackages: [
       "indent-guide-improved"
+      "jscs-fixer"
     ]
   "atom-beautify":
     _analyticsUserId: "3f456593-a9f0-4c00-a0ec-55e1217bb910"
     html_end_with_newline: true
-    analytics: false
     beautifyEntireFileOnSave: false
     js_end_with_newline: true
     css_align_assignments: true
     html_indent_inner_html: true
     js_break_chained_methods: true
-    html_wrap_attributes: "force"
     html_wrap_line_length: 120
+    analytics: false
+    html_wrap_attributes: "force"
+    js_indent_with_tabs: true
   fonts:
     fontFamily: "Source Code Pro Light"
   "one-dark-ui":
@@ -55,10 +60,22 @@
       js:
         editor:
           tabLength: 4
-  minimap: {}
+  minimap:
+    plugins:
+      "find-and-replace": true
+      "find-and-replaceDecorationsZIndex": 0
   emmet: {}
   "imdone-atom": {}
   "jscs-fixer": {}
+  "linter-jscs":
+    preset: "google"
+  "atom-terminal-panel": {}
+  build:
+    buildOnSave: true
+    notificationOnRefresh: true
+  "dark-flat-ui": {}
+  "tree-view":
+    hideVcsIgnoredFiles: true
 ".text.todo":
   editor:
     preferredLineLength: 100

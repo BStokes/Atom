@@ -39,14 +39,16 @@ module.exports = {
     },
     processStylus: {
       title: 'Process stylus as sass',
-      description: '!WARNING! Highly unstable feature, works only when processing selection, and may break on everything. Use at your own risk.',
+      description: '!WARNING! Highly unstable feature, works only when processing selection, '
+        + 'and may break on everything. Use at your own risk.',
       type: 'boolean',
       default: false
     }
   },
 
   activate(state) {
-    const CssComb = require('./css-comb');
+    const CssComb = require('./css-comb').default;
+
     this.instance = new CssComb(state);
   },
 

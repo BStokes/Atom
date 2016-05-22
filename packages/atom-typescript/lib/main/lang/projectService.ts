@@ -104,7 +104,7 @@ export function build(query: BuildQuery): Promise<BuildResponse> {
 
     let filesToEmit = proj.projectFile.project.files.filter(fte => !fte.toLowerCase().endsWith('.json'));
     /** I am assuming there was at least one file. How else would we even get here? */
-    filesToEmit = proj.projectFile.project.compilerOptions.out ? [filesToEmit[0]] : filesToEmit;
+    filesToEmit = proj.projectFile.project.compilerOptions.outFile ? [filesToEmit[0]] : filesToEmit;
 
     let totalCount = filesToEmit.length;
     var builtCount = 0;
@@ -124,7 +124,7 @@ export function build(query: BuildQuery): Promise<BuildResponse> {
         return output;
     });
 
-    // Also optionally emit a root dts:		
+    // Also optionally emit a root dts:
     building.emitDts(proj);
 
     // If there is a post build script to run ... run it
@@ -138,7 +138,7 @@ export function build(query: BuildQuery): Promise<BuildResponse> {
             }
         });
     }
-    
+
     let tsFilesWithInvalidEmit = outputs
         .filter((o) => o.emitError)
         .map((o) => o.sourceFileName);

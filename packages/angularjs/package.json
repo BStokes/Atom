@@ -1,6 +1,6 @@
 {
   "name": "angularjs",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "main": "./lib/angularjs",
   "description": "An AngularJS package for Atom",
   "keywords": [
@@ -24,10 +24,10 @@
     "url": "https://github.com/angular-ui/AngularJS-Atom/issues"
   },
   "homepage": "https://github.com/angular-ui/AngularJS-Atom",
-  "_id": "angularjs@0.3.3",
-  "_shasum": "b64da6083d26d445f76990b3e919e90da26b9cf8",
-  "_resolved": "file:../d-115926-8633-1hi4opw/package.tgz",
-  "_from": "../d-115926-8633-1hi4opw/package.tgz",
+  "_id": "angularjs@0.3.4",
+  "_shasum": "b67f65b7e08549a44855dab0856b6b37feb4b84c",
+  "_resolved": "file:../d-116018-7501-1uau9u/package.tgz",
+  "_from": "../d-116018-7501-1uau9u/package.tgz",
   "_atomModuleCache": {
     "version": 1,
     "dependencies": [],

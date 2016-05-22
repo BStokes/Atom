@@ -1,3 +1,4 @@
+"use strict";
 var os_1 = require("os");
 var displayPartsToString = ts.displayPartsToString, typeToDisplayParts = ts.typeToDisplayParts;
 var getPathCompletions_1 = require("../../modules/getPathCompletions");
@@ -53,5 +54,5 @@ var AddImportStatement = (function () {
         return refactorings;
     };
     return AddImportStatement;
-})();
+}());
 exports.AddImportStatement = AddImportStatement;

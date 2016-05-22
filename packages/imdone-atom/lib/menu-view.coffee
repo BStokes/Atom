@@ -12,9 +12,9 @@ class MenuView extends View
       @div class: "imdone-menu-inner", =>
         @div class: "imdone-toolbar", =>
           @div click: "toggleMenu", class: "imdone-menu-toggle imdone-toolbar-button", title: "tools baby!", =>
-            @a href: "#", class: "icon icon-tools"
+            @a href: "#", class: "icon icon-gear"
           @div click: "newList", class: "new-list-open imdone-toolbar-button", title: "I need another list", =>
-            @a href: "#", class: "icon icon-list-ordered"
+            @a href: "#", class: "icon icon-plus"
           @div class: "imdone-help imdone-toolbar-button", title: "Help, please!", =>
             @a href: "https://github.com/imdone/imdone-core#task-formats", class: "icon icon-question"
           @div class: "imdone-project-plugins"
@@ -70,7 +70,7 @@ class MenuView extends View
       @updateMenu()
 
   updateMenu: ->
-    console.log "menu update"
+    return unless @imdoneRepo
     @listsSortable.destroy() if @listsSortable
     @lists.empty()
 

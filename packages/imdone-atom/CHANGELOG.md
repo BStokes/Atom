@@ -1,3 +1,44 @@
+## 1.2.7
+* imdone-core update for arduino ino files
+
+## 1.2.6
+* imdone-core update for scala and sbt
+
+## 1.2.5
+* Fix todo.txt dates display
+
+## 1.2.4
+* Make PluginViewInterface an internal class that extends Emitter
+
+## 1.2.3
+* Don't add hash to code style tasks
+* Add salesforce extensions
+
+## 1.2.2
+* Fix styles for light themes
+
+## 1.2.1
+* Update sortable package
+
+## 1.2.0
+* Official plugin release
+
+## 1.1.60
+* Just a readme update
+
+## 1.1.59
+* Update imdone-core.  Fix task text modification.
+
+## 1.1.57
+* Remove plugin view on plugin.removed
+
+## 1.1.56
+* Add emitter for plugins and emit board.update
+
+## 1.1.55
+* Only emit config.update on watched repo
+* On renameList return if old and new name are the same
+
 ## 1.1.53
 * Update readme and add padding to buttons
 
@@ -113,7 +154,7 @@
 * Fix Path for windows users
 
 ## 1.1.10
-* [Fix config path checking for windows git-iss:5](#DONE:80)
+* [Fix config path checking for windows git-iss:5](#DONE:100)
 * Update version of imdone-core to allow pks and pkb files
 
 ## 1.1.9
@@ -160,4 +201,4 @@
 
 ----
 
-- [Remember to update changelog before +publishing +package user:piascikj](#DOING:0)
+- #DOING:0 Remember to update changelog before @piascikj +publishing +package

@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -42,5 +43,5 @@ var TooltipView = (function (_super) {
         this.$.css({ left: left, top: top, right: right });
     };
     return TooltipView;
-})(view.View);
+}(view.View));
 exports.TooltipView = TooltipView;

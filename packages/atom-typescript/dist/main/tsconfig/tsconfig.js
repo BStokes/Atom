@@ -1,9 +1,14 @@
+"use strict";
 var fsu = require("../utils/fsUtil");
 var simpleValidator = require('./simpleValidator');
 var types = simpleValidator.types;
 var compilerOptionsValidation = {
-    allowNonTsExtensions: { type: simpleValidator.types.boolean },
-    charset: { type: simpleValidator.types.string },
+    allowJs: { type: types.boolean },
+    allowNonTsExtensions: { type: types.boolean },
+    allowSyntheticDefaultImports: { type: types.boolean },
+    allowUnreachableCode: { type: types.boolean },
+    allowUnusedLabels: { type: types.boolean },
+    charset: { type: types.string },
     codepage: { type: types.number },
     declaration: { type: types.boolean },
     diagnostics: { type: types.boolean },
@@ -11,6 +16,7 @@ var compilerOptionsValidation = {
     experimentalAsyncFunctions: { type: types.boolean },
     experimentalDecorators: { type: types.boolean },
     emitDecoratorMetadata: { type: types.boolean },
+    forceConsistentCasingInFileNames: { type: types.boolean },
     help: { type: types.boolean },
     inlineSourceMap: { type: types.boolean },
     inlineSources: { type: types.boolean },
@@ -26,7 +32,10 @@ var compilerOptionsValidation = {
     noEmitHelpers: { type: types.boolean },
     noEmitOnError: { type: types.boolean },
     noErrorTruncation: { type: types.boolean },
+    noFallthroughCasesInSwitch: { type: types.boolean },
     noImplicitAny: { type: types.boolean },
+    noImplicitUseStrict: { type: types.boolean },
+    noImplicitReturns: { type: types.boolean },
     noLib: { type: types.boolean },
     noLibCheck: { type: types.boolean },
     noResolve: { type: types.boolean },
@@ -34,14 +43,19 @@ var compilerOptionsValidation = {
     outFile: { type: types.string },
     outDir: { type: types.string },
     preserveConstEnums: { type: types.boolean },
+    pretty: { type: types.boolean },
+    project: { type: types.string },
+    reactNamespace: { type: types.string },
     removeComments: { type: types.boolean },
     rootDir: { type: types.string },
+    skipDefaultLibCheck: { type: types.boolean },
     sourceMap: { type: types.boolean },
     sourceRoot: { type: types.string },
+    strictNullChecks: { type: types.boolean },
     stripInternal: { type: types.boolean },
     suppressExcessPropertyErrors: { type: types.boolean },
     suppressImplicitAnyIndexErrors: { type: types.boolean },
-    target: { type: types.string, validValues: ['es3', 'es5', 'es6'] },
+    target: { type: types.string, validValues: ['es3', 'es5', 'es6', 'es2015'] },
     version: { type: types.boolean },
     watch: { type: types.boolean },
 };
@@ -65,6 +79,7 @@ var path = require('path');
 var tsconfig = require('tsconfig');
 var os = require('os');
 var detectIndent = require('detect-indent');
+var detectNewline = require('detect-newline');
 var formatting = require('./formatting');
 var projectFileName = 'tsconfig.json';
 var defaultFilesGlob = [
@@ -83,6 +98,7 @@ exports.defaults = {
     emitDecoratorMetadata: true,
     declaration: false,
     noImplicitAny: false,
+    noImplicitUseStrict: false,
     removeComments: true,
     noLib: false,
     preserveConstEnums: true,
@@ -131,7 +147,9 @@ function rawToTsCompilerOptions(jsonOptions, projectDir) {
     var compilerOptions = mixin({}, exports.defaults);
     for (var key in jsonOptions) {
         if (typescriptEnumMap[key]) {
-            compilerOptions[key] = typescriptEnumMap[key][jsonOptions[key].toLowerCase()];
+            var name_1 = jsonOptions[key];
+            var map = typescriptEnumMap[key];
+            compilerOptions[key] = map[name_1.toLowerCase()] || map[name_1.toUpperCase()];
         }
         else {
             compilerOptions[key] = jsonOptions[key];
@@ -144,10 +162,10 @@ function rawToTsCompilerOptions(jsonOptions, projectDir) {
         compilerOptions.rootDir = path.resolve(projectDir, compilerOptions.rootDir);
     }
     if (compilerOptions.out !== undefined) {
-        compilerOptions.out = path.resolve(projectDir, compilerOptions.out);
+        compilerOptions.outFile = path.resolve(projectDir, compilerOptions.out);
     }
     if (compilerOptions.outFile !== undefined) {
-        compilerOptions.out = path.resolve(projectDir, compilerOptions.outFile);
+        compilerOptions.outFile = path.resolve(projectDir, compilerOptions.outFile);
     }
     return compilerOptions;
 }
@@ -174,7 +192,8 @@ function getDefaultInMemoryProject(srcFile) {
         formatCodeOptions: formatting.defaultFormatCodeOptions(),
         compileOnSave: true,
         buildOnSave: false,
-        scripts: {}
+        scripts: {},
+        atom: { rewriteTsconfig: true, formatOnSave: false },
     };
     return {
         projectFileDirectory: dir,
@@ -208,9 +227,14 @@ function getProjectSync(pathOrSrcFile) {
     catch (ex) {
         throw errorWithDetails(new Error(exports.errors.GET_PROJECT_JSON_PARSE_FAILED), { projectFilePath: fsu.consistentPath(projectFile), error: ex.message });
     }
+    if (!projectSpec.atom) {
+        projectSpec.atom = {
+            rewriteTsconfig: true,
+        };
+    }
     if (projectSpec.filesGlob) {
-        var prettyJSONProjectSpec = prettyJSON(projectSpec, detectIndent(projectFileTextContent).indent);
-        if (prettyJSONProjectSpec !== projectFileTextContent) {
+        var prettyJSONProjectSpec = prettyJSON(projectSpec, detectIndent(projectFileTextContent).indent, detectNewline(projectFileTextContent));
+        if (prettyJSONProjectSpec !== projectFileTextContent && projectSpec.atom.rewriteTsconfig) {
             fs.writeFileSync(projectFile, prettyJSONProjectSpec);
         }
     }
@@ -240,7 +264,8 @@ function getProjectSync(pathOrSrcFile) {
         typings: [],
         externalTranspiler: projectSpec.externalTranspiler == undefined ? undefined : projectSpec.externalTranspiler,
         scripts: projectSpec.scripts || {},
-        buildOnSave: !!projectSpec.buildOnSave
+        buildOnSave: !!projectSpec.buildOnSave,
+        atom: { rewriteTsconfig: true, formatOnSave: !!projectSpec.atom.formatOnSave }
     };
     var validationResult = validator.validate(projectSpec.compilerOptions);
     if (validationResult.errorMessage) {
@@ -272,7 +297,12 @@ function createProjectRootSync(srcFile, defaultOptions) {
         throw new Error(exports.errors.CREATE_PROJECT_ALREADY_EXISTS);
     var projectSpec = {};
     projectSpec.compilerOptions = tsToRawCompilerOptions(defaultOptions || exports.defaults);
-    projectSpec.filesGlob = defaultFilesGlob;
+    projectSpec.exclude = ["node_modules", "typings/browser", "typings/browser.d.ts"];
+    projectSpec.compileOnSave = true;
+    projectSpec.buildOnSave = false;
+    projectSpec.atom = {
+        rewriteTsconfig: false
+    };
     fs.writeFileSync(projectFilePath, prettyJSON(projectSpec));
     return getProjectSync(srcFile);
 }
@@ -299,28 +329,32 @@ function increaseProjectForReferenceAndImports(files) {
                 return;
             }
             var preProcessedFileInfo = ts.preProcessFile(content, true), dir = path.dirname(file);
+            var extensions = ['.ts', '.d.ts', '.tsx'];
+            function getIfExists(filePathNoExt) {
+                for (var _i = 0, extensions_1 = extensions; _i < extensions_1.length; _i++) {
+                    var ext = extensions_1[_i];
+                    if (fs.existsSync(filePathNoExt + ext)) {
+                        return filePathNoExt + ext;
+                    }
+                }
+            }
             referenced.push(preProcessedFileInfo.referencedFiles.map(function (fileReference) {
                 var file = path.resolve(dir, fsu.consistentPath(fileReference.fileName));
                 if (fs.existsSync(file)) {
                     return file;
                 }
-                if (fs.existsSync(file + '.ts')) {
-                    return file + '.ts';
-                }
-                if (fs.existsSync(file + '.d.ts')) {
-                    return file + '.d.ts';
-                }
-                return null;
+                return getIfExists(file);
             }).filter(function (file) { return !!file; })
                 .concat(preProcessedFileInfo.importedFiles
                 .filter(function (fileReference) { return pathIsRelative(fileReference.fileName); })
                 .map(function (fileReference) {
-                var file = path.resolve(dir, fileReference.fileName + '.ts');
-                if (!fs.existsSync(file)) {
-                    file = path.resolve(dir, fileReference.fileName + '.d.ts');
+                var fileNoExt = path.resolve(dir, fileReference.fileName);
+                var file = getIfExists(fileNoExt);
+                if (!file) {
+                    file = getIfExists(file + "/index");
                 }
                 return file;
-            })));
+            }).filter(function (file) { return !!file; })));
         });
         return selectMany(referenced);
     };
@@ -370,8 +404,8 @@ function getDefinitionsForNodeModules(projectDir, files) {
     try {
         var node_modules = travelUpTheDirectoryTreeTillYouFind(projectDir, 'node_modules', true);
         var moduleDirs = getDirs(node_modules);
-        for (var _i = 0; _i < moduleDirs.length; _i++) {
-            var moduleDir = moduleDirs[_i];
+        for (var _i = 0, moduleDirs_1 = moduleDirs; _i < moduleDirs_1.length; _i++) {
+            var moduleDir = moduleDirs_1[_i];
             try {
                 var package_json = JSON.parse(fs.readFileSync(moduleDir + "/package.json").toString());
                 packagejson.push(moduleDir + "/package.json");
@@ -405,8 +439,9 @@ function getDefinitionsForNodeModules(projectDir, files) {
         .filter(function (x) { return existing[x]; });
     return { implicit: implicit, ours: ours, packagejson: packagejson };
 }
-function prettyJSON(object, indent) {
+function prettyJSON(object, indent, newLine) {
     if (indent === void 0) { indent = 4; }
+    if (newLine === void 0) { newLine = os.EOL; }
     var cache = [];
     var value = JSON.stringify(object, function (key, value) {
         if (typeof value === 'object' && value !== null) {
@@ -417,7 +452,7 @@ function prettyJSON(object, indent) {
         }
         return value;
     }, indent);
-    value = value.split('\n').join(os.EOL) + os.EOL;
+    value = value.replace(/(?:\r\n|\r|\n)/g, newLine) + newLine;
     cache = null;
     return value;
 }
@@ -496,8 +531,8 @@ exports.getPotentiallyRelativeFile = getPotentiallyRelativeFile;
 function getDirs(rootDir) {
     var files = fs.readdirSync(rootDir);
     var dirs = [];
-    for (var _i = 0; _i < files.length; _i++) {
-        var file = files[_i];
+    for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
+        var file = files_1[_i];
         if (file[0] != '.') {
             var filePath = rootDir + "/" + file;
             var stat = fs.statSync(filePath);

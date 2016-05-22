@@ -1,4 +1,4 @@
-# FAQ 
+# FAQ
 
 Please checkout [the FAQ](https://github.com/TypeStrong/atom-typescript/blob/master/docs/faq.md) before creating a new issue :rose:
 
@@ -16,6 +16,8 @@ apm link -l
 ```
 
 You still have to reload atom with `ctrl+alt+r` to test your changes.
+
+Now you can use atom-typescript *to develop atom-typescript*. This is covered more in the workflow https://github.com/TypeStrong/atom-typescript/blob/master/CONTRIBUTING.md#workflow
 
 (Note: [There is more guidance here](https://github.com/atom/atom/blob/master/docs/contributing-to-packages.md) but what we have is sufficient. `apm link -l` creates a symlink for the folder into `%HOMEPATH%\.atom\packages`)
 
@@ -46,7 +48,7 @@ Update the version used by Atom-TypeScript using `npm install ntypescript@latest
 ## Publishing
 
 * If you have only fixed bugs in a backward-compatible way (or consider your changes very minimal), run `apm publish patch`.
-* If you have implemented new functionality, run `apm publish minor`.
+* If you have implemented new functionality, run `apm publish minor`. (A TypeScript update should at least be minor).
 * For breaking changes run `apm publish major`. These must be justified with a reason documented in `changelog.md`
 
 Additional Notes:

@@ -1,3 +1,4 @@
+"use strict";
 var QuoteToTemplate = (function () {
     function QuoteToTemplate() {
         this.key = QuoteToTemplate.name;
@@ -29,5 +30,5 @@ var QuoteToTemplate = (function () {
         return [refactoring];
     };
     return QuoteToTemplate;
-})();
+}());
 exports.QuoteToTemplate = QuoteToTemplate;

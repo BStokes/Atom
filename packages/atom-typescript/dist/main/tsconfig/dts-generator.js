@@ -1,3 +1,4 @@
+"use strict";
 var pathUtil = require("path");
 var os = require("os");
 var fs = require("fs");
@@ -97,10 +98,10 @@ function generate(options, sendMessage) {
         output.on('close', function () { resolve(undefined); });
         output.on('error', reject);
         if (options.externs) {
-            var relativeRoot = pathUtil.dirname(options.out);
+            var relativeRoot_1 = pathUtil.dirname(options.out);
             options.externs.forEach(function (path) {
                 sendMessage("Writing external dependency " + path);
-                output.write("/// <reference path=\"" + makeRelativePath(relativeRoot, path) + "\" />" + eol);
+                output.write("/// <reference path=\"" + makeRelativePath(relativeRoot_1, path) + "\" />" + eol);
             });
         }
         program.getSourceFiles().some(function (sourceFile) {

@@ -29,8 +29,14 @@ module.exports = class PrettyDiff extends Beautifier
       space: "space_after_anon_function"
       noleadzero: "no_lead_zero"
       endcomma: "end_with_comma"
+      methodchain: ['break_chained_methods', (break_chained_methods) ->
+        if (break_chained_methods is true ) then \
+          false else true
+      ]
+      ternaryline: "preserve_ternary_lines"
     # Apply language-specific options
     CSV: true
+    Coldfusion: true
     ERB: true
     EJS: true
     HTML: true
@@ -48,6 +54,7 @@ module.exports = class PrettyDiff extends Beautifier
     LESS: true
     Swig: true
     Visualforce: true
+    "Riot.js": true
   }
 
   beautify: (text, language, options) ->
@@ -61,11 +68,13 @@ module.exports = class PrettyDiff extends Beautifier
       switch language
         when "CSV"
           lang = "csv"
+        when "Coldfusion"
+          lang = "html"
         when "EJS", "Twig"
           lang = "ejs"
         when "ERB"
           lang = "html_ruby"
-        when "Handlebars", "Mustache", "Spacebars", "Swig"
+        when "Handlebars", "Mustache", "Spacebars", "Swig", "Riot.js"
           lang = "handlebars"
         when "SGML"
           lang = "markup"

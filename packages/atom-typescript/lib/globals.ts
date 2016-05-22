@@ -1,3 +1,5 @@
+/// <reference path="../node_modules/ntypescript/bin/ntypescript.d.ts"/>
+/// <reference path="../node_modules/tsconfig/dist/tsconfig.d.ts"/>
 /// <reference path="./typings/tsd.d.ts"/>
 
 // From brackets plugin
@@ -35,6 +37,11 @@ declare module 'escape-html' {
 declare module 'detect-indent' {
     function detectIndent (string: string): { amount: number; type?: string; indent: string };
     export = detectIndent;
+}
+
+declare module 'detect-newline' {
+    function detectNewline (string: string): string;
+    export = detectNewline;
 }
 
 declare module 'xtend' {

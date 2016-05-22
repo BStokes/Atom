@@ -21,6 +21,10 @@
   },
   "lists": [
     {
+      "name": "CHANGED",
+      "hidden": true
+    },
+    {
       "name": "BACKLOG",
       "hidden": true
     },
@@ -34,7 +38,7 @@
     },
     {
       "name": "DONE",
-      "hidden": true
+      "hidden": false
     }
   ],
   "marked": {

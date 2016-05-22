@@ -207,11 +207,11 @@ export function registerCommands() {
         /*atom.commands.dispatch(
             atom.views.getView(atom.workspace.getActiveTextEditor()),
             'typescript:testing-r-view');*/
-        
+
         // atom.commands.dispatch(
         //     atom.views.getView(atom.workspace.getActiveTextEditor()),
         //     'typescript:toggle-semantic-view');
-             
+
         atom.commands.dispatch(
             atom.views.getView(atom.workspace.getActiveTextEditor()),
             'typescript:dependency-view');
@@ -338,7 +338,7 @@ export function registerCommands() {
                 viewForItem: (item) => {
                     return `<div>
                         <span>${atom.project.relativize(item.filePath) }</span>
-                        <div class="pull-right">line: ${item.position.line}</div>
+                        <div class="pull-right">line: ${item.position.line + 1}</div>
                         <ts-view>${item.preview}</ts-view>
                     <div>`;
                 },
@@ -371,7 +371,7 @@ export function registerCommands() {
         (e) => {
             var editor = atom.workspace.getActiveTextEditor();
             if (!editor) return false;
-            if (path.extname(editor.getPath()) !== '.ts') return false;
+            if (path.extname(editor.getPath()) !== '.ts' && path.extname(editor.getPath()) !== '.tsx') return false;
 
 
             // Abort it for others

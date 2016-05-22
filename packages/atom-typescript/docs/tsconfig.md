@@ -20,7 +20,9 @@ i.e. an empty JSON file at the *root* of your project :heart: This will be suffi
 * [`compileOnSave`](https://github.com/TypeStrong/atom-typescript/blob/master/docs/tsconfig.md#compileonsave) : Should AtomTS compile on save
 * [`buildOnSave`](https://github.com/TypeStrong/atom-typescript/blob/master/docs/tsconfig.md#buildonsave) : Should AtomTS build on save
 * [`scripts`](https://github.com/TypeStrong/atom-typescript/blob/master/docs/tsconfig.md#scripts) : Sometimes its useful to have post build scripts
-
+* [`atom`](https://github.com/TypeStrong/atom-typescript/blob/master/docs/tsconfig.md#atom) : Configuration specific to Atom.
+  * [`rewriteTsconfig`](https://github.com/TypeStrong/atom-typescript/blob/master/docs/tsconfig.md#rewriteTsconfig) which prevents Atom from rewriting a project's `tsconfig.json`
+  * [`formatOnSave`](https://github.com/TypeStrong/atom-typescript/blob/master/docs/tsconfig.md#formatOnSave) which will format the Typescript file on save.
 
 ## Examples
 
@@ -56,16 +58,17 @@ A default `filesGlob` is available for you as a snippet : `fg`
         "noLib": false
     },
     "filesGlob": [
-        "./**/*.ts",
-        "!./node_modules/**/*.ts"
+        "**/*.ts",
+        "**/*.tsx",
+        "!node_modules/**"
     ],
     "files": [
-        "./globals.ts",
-        "./linter.ts",
-        "./main/atom/atomUtils.ts",
-        "./main/atom/autoCompleteProvider.ts",
-        "./worker/messages.ts",
-        "./worker/parent.ts"
+        "globals.ts",
+        "linter.ts",
+        "main/atom/atomUtils.ts",
+        "main/atom/autoCompleteProvider.ts",
+        "worker/messages.ts",
+        "worker/parent.ts"
     ]
 }
 ```
@@ -112,6 +115,36 @@ Build means *compile all files*. Useful if for some reason you are using `--out`
 ```json
 {
   "buildOnSave": true
+}
+```
+
+### atom
+Configuration options specific to Atom.
+
+
+**rewriteTsconfig**
+
+Atom-Typescript constantly resolves the `filesGlob` listed in your `tsconfig.json` to ensure that the glob is in sync
+with your project. If your project doesn't require this (you are managing your `filesGlob` some other way), set this
+to `false` (this defaults to `true`).
+
+```json
+{
+  "atom": {
+    "rewriteTsconfig": true
+  }
+}
+```
+
+**formatOnSave**
+
+Setting this to `true` will format the entire file exactly like `ctrl+alt+l` or `cmd+alt+l` does on save. (this defaults to `false`)
+
+```json
+{
+  "atom": {
+    "formatOnSave": true
+  }
 }
 ```
 

@@ -1,3 +1,4 @@
+"use strict";
 var parent = require('../../worker/parent');
 var atomConfig = require('./atomConfig');
 var fs = require('fs');
@@ -21,10 +22,10 @@ exports.provider = {
             return Promise.resolve([]);
         if (!fs.existsSync(filePath))
             return Promise.resolve([]);
-        var pathMatchers = ['reference.path.string', 'require.path.string', 'es6import.path.string'];
+        var pathMatchers = ['reference.path.string.quoted', 'require.path.string.quoted', 'es6import.path.string.quoted'];
         var lastScope = options.scopeDescriptor.scopes[options.scopeDescriptor.scopes.length - 1];
         if (pathMatchers.some(function (p) { return lastScope === p; })) {
-            return parent.getRelativePathsInProject({ filePath: filePath, prefix: options.prefix, includeExternalModules: lastScope !== 'reference.path.string' })
+            return parent.getRelativePathsInProject({ filePath: filePath, prefix: options.prefix, includeExternalModules: lastScope !== 'reference.path.string.quoted' })
                 .then(function (resp) {
                 return resp.files.map(function (file) {
                     var relativePath = file.relativePath;
@@ -35,17 +36,17 @@ exports.provider = {
                         rightLabelHTML: '<span>' + file.name + '</span>',
                         type: 'path'
                     };
-                    if (lastScope == 'reference.path.string') {
+                    if (lastScope == 'reference.path.string.quoted') {
                         suggestion.atomTS_IsReference = {
                             relativePath: relativePath
                         };
                     }
-                    if (lastScope == 'require.path.string') {
+                    if (lastScope == 'require.path.string.quoted') {
                         suggestion.atomTS_IsImport = {
                             relativePath: relativePath
                         };
                     }
-                    if (lastScope == 'es6import.path.string') {
+                    if (lastScope == 'es6import.path.string.quoted') {
                         suggestion.atomTS_IsES6Import = {
                             relativePath: relativePath
                         };
@@ -114,10 +115,11 @@ exports.provider = {
             if (options.suggestion.atomTS_IsImport) {
                 options.editor.moveToBeginningOfLine();
                 options.editor.selectToEndOfLine();
-                var groups = /^\s*import\s*(\w*)\s*=\s*require\s*\(\s*(["'])/.exec(options.editor.getSelectedText());
-                var alias = groups[1];
-                quote = quote || groups[2];
-                options.editor.replaceSelectedText(null, function () { return "import " + alias + " = require(" + quote + options.suggestion.atomTS_IsImport.relativePath + quote + ");"; });
+                var groups = /^(\s*)import\s*(\w*)\s*=\s*require\s*\(\s*(["'])/.exec(options.editor.getSelectedText());
+                var leadingWhiteSpace = groups[1];
+                var alias = groups[2];
+                quote = quote || groups[3];
+                options.editor.replaceSelectedText(null, function () { return leadingWhiteSpace + "import " + alias + " = require(" + quote + options.suggestion.atomTS_IsImport.relativePath + quote + ");"; });
             }
             if (options.suggestion.atomTS_IsES6Import) {
                 var row = options.editor.getCursorBufferPosition().row;
