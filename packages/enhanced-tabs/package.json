@@ -15,7 +15,7 @@
     "atom": ">=0.174.0 <2.0.0"
   },
   "dependencies": {
-    "lodash": "^2.4.1",
+    "lodash": "^4.17.19",
     "atom-space-pen-views": "latest"
   },
   "readme": "# enhanced-tabs package\n\nWebstorm-like tab switching behavior for atom editor.\n\n![A screenshot of your package](https://cloud.githubusercontent.com/assets/5073932/5833836/4877b32e-a168-11e4-82a5-4dceadc32ec2.gif)\n\n## Usage\nCtrl+Tab - switching between tabs\n",
@@ -698,7 +698,7 @@
           ""
         ],
         "dependencies": {
-          "lodash": "^2.4.1"
+          "lodash": "^4.17.19"
         }
       },
       {
